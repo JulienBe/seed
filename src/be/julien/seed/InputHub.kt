@@ -1,26 +1,23 @@
 package be.julien.seed
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.InputAdapter
-
-class InputHub : InputAdapter() {
+class InputHub {
 
     private val keyUpMapping: MutableMap<Int, () -> Unit> = mutableMapOf()
     private val keyPressedMapping: MutableMap<Int, () -> Unit> = mutableMapOf()
     private var click: (() -> Unit)? = null
 
-    override fun keyUp(keycode: Int): Boolean {
+    fun keyUp(keycode: Int): Boolean {
         checkKey(keycode, keyUpMapping)
         return true
     }
 
     fun act() {
-        keyPressedMapping.forEach { key, value ->
-            if (Gdx.input.isKeyPressed(key))
-                value.invoke()
-        }
-        if (Gdx.input.isTouched)
-            click?.invoke()
+//        keyPressedMapping.forEach { key, value ->
+//            if (Gdx.input.isKeyPressed(key))
+//                value.invoke()
+//        }
+//        if (Gdx.input.isTouched)
+//            click?.invoke()
     }
 
     fun addKeyUp(key: Int, function: () -> Unit) {
