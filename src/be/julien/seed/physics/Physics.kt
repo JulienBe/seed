@@ -109,7 +109,7 @@ object Physics {
     }
 
 
-    internal fun slide(mover: Thing, obstacle: WallAO) {
+    fun slide(mover: Thing, obstacle: WallAO) {
         val normal = obstacle.normal(mover)
         val myAngle = mover.dir.angle()
         if (((myAngle + normal.angle) % 180f) > 3f) {
@@ -123,7 +123,7 @@ object Physics {
         }
     }
 
-    internal fun bounce(mover: Thing, obstacle: WallAO) {
+    fun bounce(mover: Thing, obstacle: WallAO) {
         val normal = obstacle.normal(mover).vec
         val originalSpeed = mover.dir.len()
         mover.dir.nor()
@@ -132,7 +132,7 @@ object Physics {
         mover.dir.scl(originalSpeed)
     }
 
-    private fun stuck(mover: Thing, obstacle: Thing) {
+    fun stuck(mover: Thing, obstacle: Thing) {
         if (mover.fast()) {
             var cpt = 1
             while (cpt <= rollBackSteps) {

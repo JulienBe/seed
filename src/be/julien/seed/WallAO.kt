@@ -9,7 +9,7 @@ import be.julien.seed.physics.Mask
 class WallAO(x: Float, y: Float, width: Float, height: Float,
              val dim: Dimension = Dimension.get(width, height)): Thing(Vec2.get(x, y), Vec2.get(0f, 0f)) {
 
-    override fun tr(): () -> Any {
+    override fun img(): () -> Any {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -48,7 +48,7 @@ class WallAO(x: Float, y: Float, width: Float, height: Float,
         super.debug(drawer)
         normals.forEach {
             drawer.color(1f)
-            drawer.drawSquare(centerX(), centerY(), 0f, 0f, 20f, 0.2f, it.angle)
+            drawer.draw(img(), centerX(), centerY(), 0f, 0f, 20f, 0.2f, it.angle)
         }
     }
 

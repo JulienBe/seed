@@ -1,6 +1,6 @@
 package be.julien.seed.time
 
-class TimeInt private constructor(internal var value: Int, private var interval: Float = 1f, internal var increment: Int, var callback: Callback?) {
+class TimeInt private constructor(var value: Int, private var interval: Float = 1f, internal var increment: Int, var callback: Callback?) {
 
     private var nextTrigger: Float = Time.time + interval
     private val initialVal = value

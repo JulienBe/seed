@@ -9,7 +9,7 @@ interface Drawable {
     fun h(): Float
     fun x(): Float
     fun y(): Float
-    fun tr(): () -> Any
+    fun img(): Any
     fun angle(): Float
     fun debug(drawer: Drawer) {
     }

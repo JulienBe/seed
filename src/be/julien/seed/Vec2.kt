@@ -1,6 +1,8 @@
 package be.julien.seed
 
 import be.julien.donjon.physics.Physics
+import be.julien.seed.WallAO.Companion.width
+import be.julien.seed.graphics.Drawer
 
 class Vec2 private constructor(x: Float, y: Float) {
 
@@ -101,7 +103,7 @@ class Vec2 private constructor(x: Float, y: Float) {
         return this
     }
 
-    internal fun rotate(angle: Float): Vec2 {
+    fun rotate(angle: Float): Vec2 {
         rotateRad(angle * degreesToRadians)
         return this
     }
@@ -173,23 +175,23 @@ class Vec2 private constructor(x: Float, y: Float) {
             return get(0f, 1f).setToRandomDirection()
         }
 
-        fun getRandWorld(width: Float, height: Float): Vec2 {
-            return get(Rnd.float(width), Rnd.float(height))
+        fun getRandWorld(drawer: Drawer): Vec2 {
+            return get(Rnd.float(drawer.width()), Rnd.float(drawer.height()))
         }
 
         fun getRnd(): Vec2 {
             return get(0f, 1f).steer(Rnd.float(360f), 1f)
         }
 
-        fun getRandWorld(excluded: List<Thing>, width: Float, height: Float): Vec2 {
+        fun getRandWorld(excluded: List<Thing>, drawer: Drawer): Vec2 {
             (1..50).forEach {
-                val v = getRandWorld(width, height)
+                val v = getRandWorld(drawer)
                 excluded.forEach {
                     if (!Physics.contains(it, v))
                         return v
                 }
             }
-            return getRandWorld(width, height)
+            return getRandWorld(drawer)
         }
 
         fun get(angle: Float): Vec2 {

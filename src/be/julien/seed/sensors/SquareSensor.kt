@@ -11,7 +11,7 @@ import be.julien.seed.graphics.Drawer
 
 class SquareSensor internal constructor(anchor: Thing, sensorLength: Float, val offsetAngle: Float, width: Float):
         Sensor(anchor) {
-    override fun tr(): () -> Any {
+    override fun img(): () -> Any {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
