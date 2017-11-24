@@ -176,22 +176,29 @@ class Vec2 private constructor(x: Float, y: Float) {
         }
 
         fun getRandWorld(drawer: Drawer): Vec2 {
-            return get(Rnd.float(drawer.width()), Rnd.float(drawer.height()))
+            return getRandWorld(drawer.width(), drawer.height())
+        }
+
+        fun getRandWorld(width: Float, height: Float): Vec2 {
+            return get(Rnd.float(width), Rnd.float(height))
         }
 
         fun getRnd(): Vec2 {
             return get(0f, 1f).steer(Rnd.float(360f), 1f)
         }
 
-        fun getRandWorld(excluded: List<Thing>, drawer: Drawer): Vec2 {
+        fun getRandWorld(excluded: Iterable<Thing>, drawer: Drawer): Vec2 {
+            return getRandWorld(excluded, drawer.width(), drawer.height())
+        }
+        fun getRandWorld(excluded: Iterable<Thing>, width: Float, height: Float): Vec2 {
             (1..50).forEach {
-                val v = getRandWorld(drawer)
+                val v = getRandWorld(width, height)
                 excluded.forEach {
                     if (!Physics.contains(it, v))
                         return v
                 }
             }
-            return getRandWorld(drawer)
+            return getRandWorld(width, height)
         }
 
         fun get(angle: Float): Vec2 {
