@@ -9,7 +9,7 @@ import be.julien.seed.time.Time
 import be.julien.seed.graphics.Drawer
 import be.julien.seed.physics.Mask
 
-abstract class Thing(public val pos: Vec2, public val dir: Vec2) : DrawableDim, Drawable {
+abstract class Thing(public val pos: Vec2, public val dir: Vec2, val img: Any) : DrawableDim, Drawable {
 
     val sensors: Collection<Sensor> = mutableListOf()
     internal var dead = false
@@ -74,7 +74,7 @@ abstract class Thing(public val pos: Vec2, public val dir: Vec2) : DrawableDim, 
     override fun x(): Float = pos.x()
     override fun y(): Float = pos.y()
     override fun angle(): Float = 0f
-//    override fun img(): TextureRegion = AssetMan.square
+    override fun img(): Any = img
 
     abstract fun mask(): Mask
     abstract override fun dimension(): Dimension

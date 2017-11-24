@@ -7,11 +7,8 @@ import be.julien.seed.graphics.Drawer
 import be.julien.seed.physics.Mask
 
 class WallAO(x: Float, y: Float, width: Float, height: Float,
-             val dim: Dimension = Dimension.get(width, height)): Thing(Vec2.get(x, y), Vec2.get(0f, 0f)) {
-
-    override fun img(): () -> Any {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+             val dim: Dimension = Dimension.get(width, height),
+             img: Any): Thing(Vec2.get(x, y), Vec2.get(0f, 0f), img) {
 
     private val normals = arrayOf(
         Normal(
