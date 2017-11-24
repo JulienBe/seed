@@ -11,7 +11,7 @@ import be.julien.seed.physics.Mask
 
 abstract class Thing(public val pos: Vec2, public val dir: Vec2) : DrawableDim, Drawable {
 
-    val sensors = mutableListOf<Sensor>()
+    val sensors: Collection<Sensor> = mutableListOf()
     internal var dead = false
 
     open fun fast(): Boolean = false
@@ -58,7 +58,7 @@ abstract class Thing(public val pos: Vec2, public val dir: Vec2) : DrawableDim, 
         dir.rotate(Physics.goAwayMod(other, this) * -2f)
     }
 
-    internal fun dirCenter(other: Thing): Vec2 {
+    fun dirCenter(other: Thing): Vec2 {
         return Physics.dirCenter(other, this)
     }
 

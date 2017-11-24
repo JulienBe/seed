@@ -5,7 +5,7 @@ import be.julien.seed.Thing
 import be.julien.seed.physics.Mask
 
 abstract class Sensor(var anchor: Thing) : Thing(Vec2.get(0f, 0f), Vec2.get(0f, 0f)) {
-    internal val colliders = mutableListOf<Thing>()
+    val colliders: MutableCollection<Thing> = mutableListOf()
 
     override fun mask(): Mask = Mask.Sensor
 
