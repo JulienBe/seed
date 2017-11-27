@@ -4,7 +4,7 @@ import be.julien.donjon.physics.Physics
 import be.julien.seed.WallAO.Companion.width
 import be.julien.seed.graphics.Drawer
 
-class Vec2 private constructor(x: Float, y: Float) {
+class Vec2 internal constructor(x: Float, y: Float) {
 
     val PI = 3.1415927f
     val radiansToDegrees = 180f / PI
@@ -13,7 +13,8 @@ class Vec2 private constructor(x: Float, y: Float) {
 
     private var x: Float = x
     private var y: Float = y
-    private lateinit var previous: Vec2
+    private var pX: Float = x
+    private var pY: Float = y
 
     fun move(dir: Vec2, delta: Float) {
         x += dir.x() * delta
@@ -31,6 +32,12 @@ class Vec2 private constructor(x: Float, y: Float) {
     fun y(): Float {
         return y
     }
+    fun pX(): Float {
+        return pX
+    }
+    fun pY(): Float {
+        return pY
+    }
 
     fun steerLeft(): Vec2 {
         val x = this.x
@@ -39,19 +46,16 @@ class Vec2 private constructor(x: Float, y: Float) {
         return this
     }
 
-    fun rollback(viscosity: Float) {
-        lerp(previous, viscosity)
-    }
-
-    fun lerp(target: Vec2, alpha: Float): Vec2 {
-        val invAlpha = 1.0f - alpha
-        this.x = x * invAlpha + target.x * alpha
-        this.y = y * invAlpha + target.y * alpha
+    fun rollback(viscosity: Float): Vec2 {
+        val invAlpha = 1.0f - viscosity
+        this.x = x * invAlpha + pX * viscosity
+        this.y = y * invAlpha + pY * viscosity
         return this
     }
 
     fun validate() {
-        previous = this
+        this.pX = this.x
+        this.pY = this.y
     }
 
     fun steerRight(): Vec2 {
@@ -213,7 +217,7 @@ class Vec2 private constructor(x: Float, y: Float) {
         this.y = y
     }
 
-    fun len(): Float = Math.sqrt((x * x + y * y).toDouble()).toFloat()
+    fun len(): Float = Math.sqrt((x.toDouble() * x + y * y)).toFloat()
 
     fun rotate90(i: Int): Vec2 {
         val x = this.x
@@ -225,6 +229,13 @@ class Vec2 private constructor(x: Float, y: Float) {
             y = -x
         }
         return this
+    }
+
+    fun bounce(bounceVector: Vec2) {
+        x = Math.abs(x)
+        y = Math.abs(y)
+        x *= bounceVector.x
+        y *= bounceVector.y
     }
 
 }

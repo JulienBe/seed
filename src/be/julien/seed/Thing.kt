@@ -11,12 +11,12 @@ import be.julien.seed.physics.Mask
 
 abstract class Thing(public val pos: Vec2, public val dir: Vec2, val img: Any) : DrawableDim, Drawable {
 
-    val sensors: Collection<Sensor> = mutableListOf()
-    internal var dead = false
+    val sensors: MutableCollection<Sensor> = mutableListOf()
+    var dead = false
 
     open fun fast(): Boolean = false
 
-    open fun wallFun() = Physics::bounce
+    open fun onWallHit() = Physics::bounce
 
     /**
      * It means that it will act one more frame after it's dead as the dead flag is probably stat after it has acted and will be only checked next frame, after it has acted again.
