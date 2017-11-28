@@ -1,4 +1,4 @@
-package be.julien.seed
+package be.julien.seed.basics
 
 import be.julien.donjon.physics.Physics
 import be.julien.seed.physics.shapes.Shape
@@ -6,6 +6,7 @@ import be.julien.seed.physics.shapes.SquareAO
 import be.julien.seed.graphics.Drawer
 import be.julien.seed.physics.Line
 import be.julien.seed.physics.Mask
+import be.julien.seed.physics.Vec2
 
 class WallAO(x: Float, y: Float, width: Float, height: Float,
              img: Any,
@@ -22,22 +23,22 @@ class WallAO(x: Float, y: Float, width: Float, height: Float,
         Line(x, y + height, x, y, Vec2(-1f, 0f)))
 
     private val normals = arrayOf(
-        Normal(
-                x, y,                                    // bottom left
-                x + width, y,                   // bottom right
-                x + width / 2, y + height / 2),
-        Normal(
-                x + width, y + height,     // top right
-                x, y + height,                  // top left
-                x + dim.halfWidth, y + dim.halfHeight),
-       Normal(
-                x, y + height,                 // top left
-                x, y,                                   // bottom left
-               x + dim.halfWidth, y + dim.halfHeight),
-        Normal(
-                x + width, y,                    // bottom right
-                x + width, y + height,  // top right
-                x + dim.halfWidth, y + dim.halfHeight)
+            Normal(
+                    x, y,                                    // bottom left
+                    x + width, y,                   // bottom right
+                    x + width / 2, y + height / 2),
+            Normal(
+                    x + width, y + height,     // top right
+                    x, y + height,                  // top left
+                    x + dim.halfWidth, y + dim.halfHeight),
+            Normal(
+                    x, y + height,                 // top left
+                    x, y,                                   // bottom left
+                    x + dim.halfWidth, y + dim.halfHeight),
+            Normal(
+                    x + width, y,                    // bottom right
+                    x + width, y + height,  // top right
+                    x + dim.halfWidth, y + dim.halfHeight)
     )
 
     override fun shape(): Shape = SquareAO

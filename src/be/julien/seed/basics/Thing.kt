@@ -1,13 +1,15 @@
-package be.julien.seed
+package be.julien.seed.basics
 
 import be.julien.donjon.graphics.Drawable
 import be.julien.donjon.physics.Physics
 import be.julien.seed.physics.shapes.Shape
 import be.julien.donjon.graphics.DrawableDim
 import be.julien.donjon.things.sensors.Sensor
+import be.julien.seed.utils.Rnd
 import be.julien.seed.time.Time
 import be.julien.seed.graphics.Drawer
 import be.julien.seed.physics.Mask
+import be.julien.seed.physics.Vec2
 
 abstract class Thing(public val pos: Vec2, public val dir: Vec2, val img: Any) : DrawableDim, Drawable {
 

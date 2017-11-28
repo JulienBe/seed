@@ -1,4 +1,4 @@
-package be.julien.seed
+package be.julien.seed.utils
 
 object SeedLoggerImpl : SeedLogger {
     override fun error(s: String) {

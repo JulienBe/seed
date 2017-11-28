@@ -1,10 +1,14 @@
 package be.julien.donjon.physics
 
-import be.julien.seed.*
+import be.julien.seed.basics.Thing
+import be.julien.seed.basics.WallAO
 import be.julien.seed.physics.Dot
 import be.julien.seed.physics.Line
+import be.julien.seed.physics.Vec2
 import be.julien.seed.physics.shapes.Circle
 import be.julien.seed.physics.shapes.SquareAO
+import be.julien.seed.utils.SeedLoggerImpl
+import be.julien.seed.utils.Util
 
 object Physics {
 

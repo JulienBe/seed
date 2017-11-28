@@ -1,8 +1,9 @@
-package be.julien.seed
+package be.julien.seed.physics
 
 import be.julien.donjon.physics.Physics
+import be.julien.seed.utils.Rnd
+import be.julien.seed.basics.Thing
 import be.julien.seed.graphics.Drawer
-import be.julien.seed.physics.Dot
 
 class Vec2 internal constructor(x: Float, y: Float) {
 

@@ -1,4 +1,4 @@
-package be.julien.seed
+package be.julien.seed.utils
 
 interface SeedLogger {
     fun log(string: String)

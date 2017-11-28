@@ -1,4 +1,4 @@
-package be.julien.seed
+package be.julien.seed.basics
 
 class Dimension private constructor(val width: Float, val height: Float) {
 

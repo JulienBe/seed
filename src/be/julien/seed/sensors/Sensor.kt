@@ -1,7 +1,7 @@
 package be.julien.donjon.things.sensors
 
-import be.julien.seed.Vec2
-import be.julien.seed.Thing
+import be.julien.seed.physics.Vec2
+import be.julien.seed.basics.Thing
 import be.julien.seed.physics.Mask
 
 abstract class Sensor(var anchor: Thing, img: Any) : Thing(Vec2.get(0f, 0f), Vec2.get(0f, 0f), img) {
