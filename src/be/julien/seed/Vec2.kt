@@ -1,8 +1,8 @@
 package be.julien.seed
 
 import be.julien.donjon.physics.Physics
-import be.julien.seed.WallAO.Companion.width
 import be.julien.seed.graphics.Drawer
+import be.julien.seed.physics.Dot
 
 class Vec2 internal constructor(x: Float, y: Float) {
 
@@ -11,57 +11,55 @@ class Vec2 internal constructor(x: Float, y: Float) {
     val degreesToRadians = PI / 180
 
 
-    private var x: Float = x
-    private var y: Float = y
-    private var pX: Float = x
-    private var pY: Float = y
+    private val current = Dot(x, y)
+    private val previous = Dot(x, y)
 
     fun move(dir: Vec2, delta: Float) {
-        x += dir.x() * delta
-        y += dir.y() * delta
+        current.x += dir.x() * delta
+        current.y += dir.y() * delta
     }
 
     fun move(x: Float, y: Float) {
-        this.x += x
-        this.y += y
+        current.x += x
+        current.y += y
     }
 
     fun x(): Float {
-        return x
+        return current.x
     }
     fun y(): Float {
-        return y
+        return current.y
     }
     fun pX(): Float {
-        return pX
+        return previous.x
     }
     fun pY(): Float {
-        return pY
+        return previous.y
     }
 
     fun steerLeft(): Vec2 {
-        val x = this.x
-        this.x = -y
-        y = x
+        val x = current.x
+        current.x = -current.y
+        current.y = x
         return this
     }
 
     fun rollback(viscosity: Float): Vec2 {
         val invAlpha = 1.0f - viscosity
-        this.x = x * invAlpha + pX * viscosity
-        this.y = y * invAlpha + pY * viscosity
+        current.x = current.x * invAlpha + previous.x * viscosity
+        current.y = current.y * invAlpha + previous.y * viscosity
         return this
     }
 
     fun validate() {
-        this.pX = this.x
-        this.pY = this.y
+        previous.x = current.x
+        previous.y = current.y
     }
 
     fun steerRight(): Vec2 {
-        val x = this.x
-        this.x = y
-        y = -x
+        val x = current.x
+        current.x = current.y
+        current.y = -x
         return this
     }
 
@@ -71,8 +69,8 @@ class Vec2 internal constructor(x: Float, y: Float) {
     }
 
     fun set(x: Float, y: Float): Vec2 {
-        this.x = x
-        this.y = y
+        current.x = x
+        current.y = y
         return this
     }
 
@@ -82,27 +80,27 @@ class Vec2 internal constructor(x: Float, y: Float) {
     }
 
     fun angle(): Float {
-        var angle = Math.atan2(y.toDouble(), x.toDouble()).toFloat() * radiansToDegrees
+        var angle = Math.atan2(current.y.toDouble(), current.x.toDouble()).toFloat() * radiansToDegrees
         if (angle < 0) angle += 360f
         return angle
     }
 
     fun dst(other: Vec2): Float {
-        val x_d = other.x - x
-        val y_d = other.y - y
+        val x_d = other.current.x - current.x
+        val y_d = other.current.y - current.y
         return Math.sqrt((x_d * x_d + y_d * y_d).toDouble()).toFloat()
     }
     fun dst(x: Float, y: Float): Float {
-        val x_d = x - this.x
-        val y_d = y - this.y
+        val x_d = x - current.x
+        val y_d = y - current.y
         return Math.sqrt((x_d * x_d + y_d * y_d).toDouble()).toFloat()
     }
 
     fun nor(): Vec2 {
         val len = len()
         if (len != 0f) {
-            x /= len
-            y /= len
+            current.x /= len
+            current.y /= len
         }
         return this
     }
@@ -115,11 +113,11 @@ class Vec2 internal constructor(x: Float, y: Float) {
         val cos = Math.cos(radians.toDouble()).toFloat()
         val sin = Math.sin(radians.toDouble()).toFloat()
 
-        val newX = this.x * cos - this.y * sin
-        val newY = this.x * sin + this.y * cos
+        val newX = current.x * cos - current.y * sin
+        val newY = current.x * sin + current.y * cos
 
-        this.x = newX
-        this.y = newY
+        current.x = newX
+        current.y = newY
 
         return this
     }
@@ -129,16 +127,16 @@ class Vec2 internal constructor(x: Float, y: Float) {
     }
 
     fun add(other: Vec2): Vec2 {
-        x += other.x
-        y += other.y
+        current.x += other.current.x
+        current.y += other.current.y
         return this
     }
 
-    fun dot(other: Vec2): Float = x * other.x + y * other.y
+    fun dot(other: Vec2): Float = current.x * other.current.x + current.y * other.current.y
 
     fun scl(f: Float): Vec2 {
-        x *= f
-        y *= f
+        current.x *= f
+        current.y *= f
         return this
     }
 
@@ -211,31 +209,31 @@ class Vec2 internal constructor(x: Float, y: Float) {
     }
 
     fun setX(x: Float) {
-        this.x = x
+        current.x = x
     }
     fun setY(y: Float) {
-        this.y = y
+        current.y = y
     }
 
-    fun len(): Float = Math.sqrt((x.toDouble() * x + y * y)).toFloat()
+    fun len(): Float = Math.sqrt((current.x.toDouble() * current.x + current.y * current.y)).toFloat()
 
     fun rotate90(i: Int): Vec2 {
-        val x = this.x
+        val x = current.x
         if (i >= 0) {
-            this.x = -y
-            y = x
+            current.x = -current.y
+            current.y = x
         } else {
-            this.x = y
-            y = -x
+            current.x = current.y
+            current.y = -x
         }
         return this
     }
 
     fun bounce(bounceVector: Vec2) {
-        x = Math.abs(x)
-        y = Math.abs(y)
-        x *= bounceVector.x
-        y *= bounceVector.y
+        current.x = Math.abs(current.x)
+        current.y = Math.abs(current.y)
+        current.x *= bounceVector.current.x
+        current.y *= bounceVector.current.y
     }
 
 }

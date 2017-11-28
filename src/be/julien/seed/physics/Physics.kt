@@ -1,6 +1,7 @@
 package be.julien.donjon.physics
 
 import be.julien.seed.*
+import be.julien.seed.physics.Dot
 import be.julien.seed.physics.Line
 import be.julien.seed.physics.shapes.Circle
 import be.julien.seed.physics.shapes.SquareAO
@@ -124,17 +125,17 @@ object Physics {
     }
 
     fun bounce(mover: Thing, obstacle: WallAO) {
-        val intersecting = mutableListOf<Pair<Line, Pair<Float, Float>>>()
+        val intersecting = mutableListOf<Pair<Line, Dot>>()
         obstacle.lines.forEach { line ->
             val intersection = intersectLines(mover, line)
-            if (intersection.first > -1f && intersection.second > -1f)
+            if (intersection != Dot.nowhere)
                 intersecting.add(Pair(line, intersection))
         }
         var arbritraryHugeDist = 50000f
         var selectedLine = intersecting[0].first
         intersecting.forEach {
-            intersection: Pair<Line, Pair<Float, Float>> ->
-            val dst = mover.pos.dst(intersection.second.first, intersection.second.second)
+            intersection: Pair<Line, Dot> ->
+            val dst = mover.pos.dst(intersection.second.x, intersection.second.y)
             if (dst < arbritraryHugeDist) {
                 selectedLine = intersection.first
                 arbritraryHugeDist = dst
@@ -174,15 +175,18 @@ object Physics {
         return Vec2.get(other.centerX() - me.centerX(), other.centerY() - me.centerY())
     }
 
-    fun intersectLines(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float, x4: Float, y4: Float): Pair<Float, Float> {
+    fun linesIntersect(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float, x4: Float, y4: Float): Boolean =
+            intersectLines(x1, y1, x2, y2, x3, y3, x4, y4) != Dot.nowhere
+
+    fun intersectLines(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float, x4: Float, y4: Float): Dot {
         return lineIntersection(x1, y1, x2, y2, x3, y3, x4, y4)
     }
-    fun intersectLines(mover: Thing, line: Line): Pair<Float, Float> {
+    fun intersectLines(mover: Thing, line: Line): Dot {
         return intersectLines(mover.pos.pX(), mover.pos.pY(), mover.pos.x() + mover.dir.x(), mover.pos.y() + mover.dir.y(),
-                line.x1, line.y1, line.x2, line.y2)
+                line.one.x, line.one.y, line.two.x, line.two.y)
     }
 
-    fun lineIntersection(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float, x4: Float, y4: Float): Pair<Float, Float> {
+    fun lineIntersection(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float, x4: Float, y4: Float): Dot {
         val s10_x = x2 - x1
         val s10_y = y2 - y1
         val s32_x = x4 - x3
@@ -190,26 +194,25 @@ object Physics {
 
         val denom = s10_x * s32_y - s32_x * s10_y
         if (denom == 0f)
-            return Pair(-1f, -1f)
+            return Dot.nowhere
         val denomPositive = denom > 0f
 
         val s02_x = x1 - x3
         val s02_y = y1 - y3
         val s_numer = s10_x * s02_y - s10_y * s02_x
         if ((s_numer < 0) == denomPositive)
-            return Pair(-1f, -1f)
+            return Dot.nowhere
 
         val t_numer = s32_x * s02_y - s32_y * s02_x
-        println("t_numer " + t_numer)
         if ((t_numer < 0) == denomPositive)
-            return Pair(-1f, -1f)
+            return Dot.nowhere
 
         if (((s_numer > denom) == denomPositive) || ((t_numer > denom) == denomPositive))
-            return Pair(-1f, -1f)
+            return Dot.nowhere
 
         // Collision detected
         val t = t_numer / denom
-        return Pair(x1 + (t * s10_x), y1 + (t * s10_y))
+        return Dot(x1 + (t * s10_x), y1 + (t * s10_y))
     }
 
     fun  distSq(t1: Thing, t2: Thing): Float {

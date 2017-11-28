@@ -69,10 +69,7 @@ class WallAO(x: Float, y: Float, width: Float, height: Float,
 class Normal(private val x1: Float, private val y1: Float, private val x2: Float, private val y2: Float, private val centerX: Float, private val centerY: Float) {
     val angle: Float = Physics.angle(x1, y1, x2, y2) + 90f
     val vec = Vec2.get(angle)
-    fun within(x: Float, y: Float): Boolean {
-        val dot = Physics.intersectLines(x1, y1, x2, y2, centerX, centerY, x, y)
-        return dot.first != -1f && dot.second != -2f
-    }
+    fun within(x: Float, y: Float): Boolean = Physics.linesIntersect(x1, y1, x2, y2, centerX, centerY, x, y)
 
     companion object {
         val dummy = Normal(0f, 0f, 0f, 0f, 0f, 0f)
