@@ -6,8 +6,6 @@ class Dimension private constructor(val width: Float, val height: Float) {
     val halfHeight = height / 2f
 
     companion object {
-        fun get(width: Float, height: Float): Dimension {
-            return Dimension(width, height)
-        }
+        fun get(width: Float, height: Float): Dimension = Dimension(width, height)
     }
 }

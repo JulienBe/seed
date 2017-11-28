@@ -1,6 +1,4 @@
-package be.julien.donjon.graphics
-
-import be.julien.seed.graphics.Drawer
+package be.julien.seed.graphics
 
 interface Drawable {
     fun hw(): Float

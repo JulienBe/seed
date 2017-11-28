@@ -1,6 +1,5 @@
 package be.julien.seed.physics
 
-import be.julien.donjon.physics.Physics
 import be.julien.seed.utils.Rnd
 import be.julien.seed.basics.Thing
 import be.julien.seed.graphics.Drawer
@@ -25,18 +24,10 @@ class Vec2 internal constructor(x: Float, y: Float) {
         current.y += y
     }
 
-    fun x(): Float {
-        return current.x
-    }
-    fun y(): Float {
-        return current.y
-    }
-    fun pX(): Float {
-        return previous.x
-    }
-    fun pY(): Float {
-        return previous.y
-    }
+    fun x(): Float = current.x
+    fun y(): Float = current.y
+    fun pX(): Float = previous.x
+    fun pY(): Float = previous.y
 
     fun steerLeft(): Vec2 {
         val x = current.x
@@ -153,46 +144,34 @@ class Vec2 internal constructor(x: Float, y: Float) {
         return this
     }
 
-    fun isLeftCloser(other: Vec2): Boolean {
-        return isLeftCloser(other.angle())
-    }
+    fun isLeftCloser(other: Vec2): Boolean = isLeftCloser(other.angle())
 
     fun isLeftCloser(angleOther: Float): Boolean {
         val myAngle = angle()
         val upper = (myAngle + 180f) % 360f
-        if (myAngle < 180f)
-            return angleOther > myAngle && angleOther < upper
+        return if (myAngle < 180f)
+            angleOther > myAngle && angleOther < upper
         else
-            return angleOther > myAngle || angleOther < upper
+            angleOther > myAngle || angleOther < upper
     }
 
     companion object {
         val tmp = Vec2(0f, 0f)
         val zero = Vec2(0f, 0f)
 
-        fun get(x: Float, y: Float): Vec2 {
-            return Vec2(x, y)
-        }
+        fun get(x: Float, y: Float): Vec2 = Vec2(x, y)
 
-        fun rnd(): Vec2 {
-            return get(0f, 1f).setToRandomDirection()
-        }
+        fun rnd(): Vec2 = get(0f, 1f).setToRandomDirection()
 
-        fun getRandWorld(drawer: Drawer): Vec2 {
-            return getRandWorld(drawer.width(), drawer.height())
-        }
+        fun getRandWorld(drawer: Drawer): Vec2 = getRandWorld(drawer.width(), drawer.height())
 
-        fun getRandWorld(width: Float, height: Float): Vec2 {
-            return get(Rnd.float(width), Rnd.float(height))
-        }
+        fun getRandWorld(width: Float, height: Float): Vec2 = get(Rnd.float(width), Rnd.float(height))
 
-        fun getRnd(): Vec2 {
-            return get(0f, 1f).steer(Rnd.float(360f), 1f)
-        }
+        fun getRnd(): Vec2 = get(0f, 1f).steer(Rnd.float(360f), 1f)
 
-        fun getRandWorld(excluded: Iterable<Thing>, drawer: Drawer): Vec2 {
-            return getRandWorld(excluded, drawer.width(), drawer.height())
-        }
+        fun getRandWorld(excluded: Iterable<Thing>, drawer: Drawer): Vec2 =
+                getRandWorld(excluded, drawer.width(), drawer.height())
+
         fun getRandWorld(excluded: Iterable<Thing>, width: Float, height: Float): Vec2 {
             (1..50).forEach {
                 val v = getRandWorld(width, height)
@@ -204,9 +183,7 @@ class Vec2 internal constructor(x: Float, y: Float) {
             return getRandWorld(width, height)
         }
 
-        fun get(angle: Float): Vec2 {
-            return Vec2(1f, 0f).rotate(angle)
-        }
+        fun get(angle: Float): Vec2 = Vec2(1f, 0f).rotate(angle)
     }
 
     fun setX(x: Float) {

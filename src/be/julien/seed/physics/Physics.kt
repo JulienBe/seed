@@ -1,10 +1,7 @@
-package be.julien.donjon.physics
+package be.julien.seed.physics
 
 import be.julien.seed.basics.Thing
 import be.julien.seed.basics.WallAO
-import be.julien.seed.physics.Dot
-import be.julien.seed.physics.Line
-import be.julien.seed.physics.Vec2
 import be.julien.seed.physics.shapes.Circle
 import be.julien.seed.physics.shapes.SquareAO
 import be.julien.seed.utils.SeedLoggerImpl
@@ -28,7 +25,7 @@ object Physics {
     }
 
     private fun noCollision(a: Thing, b: Thing): Boolean {
-        Util.err("Hu, collision mistake between $a (${a.shape()}) and $b (${b.shape()})", SeedLoggerImpl)
+        SeedLoggerImpl.error("Hu, collision mistake between $a (${a.shape()}) and $b (${b.shape()})")
         return false
     }
 
@@ -82,15 +79,13 @@ object Physics {
                 t.h() + t.y() > v.y()
     }
 
-    private fun vecInsideCircle(t: Thing, vec2: Vec2): Boolean {
-        return vec2.dst(t.centerX(), t.centerY()) < t.w()
-    }
+    private fun vecInsideCircle(t: Thing, vec2: Vec2): Boolean = vec2.dst(t.centerX(), t.centerY()) < t.w()
 
     fun goAwayMod(other: Thing, me: Thing): Int {
-        if (cwCloser(other, me))
-            return 1
+        return if (cwCloser(other, me))
+            1
         else
-            return -1
+            -1
     }
 
     fun cwCloser(other: Thing, me: Thing): Boolean {
@@ -175,20 +170,18 @@ object Physics {
         return false
     }
 
-    fun dirCenter(other: Thing, me: Thing): Vec2 {
-        return Vec2.get(other.centerX() - me.centerX(), other.centerY() - me.centerY())
-    }
+    fun dirCenter(other: Thing, me: Thing): Vec2 =
+            Vec2.get(other.centerX() - me.centerX(), other.centerY() - me.centerY())
 
     fun linesIntersect(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float, x4: Float, y4: Float): Boolean =
             intersectLines(x1, y1, x2, y2, x3, y3, x4, y4) != Dot.nowhere
 
-    fun intersectLines(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float, x4: Float, y4: Float): Dot {
-        return lineIntersection(x1, y1, x2, y2, x3, y3, x4, y4)
-    }
-    fun intersectLines(mover: Thing, line: Line): Dot {
-        return intersectLines(mover.pos.pX(), mover.pos.pY(), mover.pos.x() + mover.dir.x(), mover.pos.y() + mover.dir.y(),
-                line.one.x, line.one.y, line.two.x, line.two.y)
-    }
+    fun intersectLines(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float, x4: Float, y4: Float): Dot =
+            lineIntersection(x1, y1, x2, y2, x3, y3, x4, y4)
+
+    fun intersectLines(mover: Thing, line: Line): Dot =
+            intersectLines(mover.pos.pX(), mover.pos.pY(), mover.pos.x() + mover.dir.x(), mover.pos.y() + mover.dir.y(),
+                    line.one.x, line.one.y, line.two.x, line.two.y)
 
     fun lineIntersection(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float, x4: Float, y4: Float): Dot {
         val s10_x = x2 - x1

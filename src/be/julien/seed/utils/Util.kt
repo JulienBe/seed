@@ -6,16 +6,8 @@ object Util {
         logger.log(string)
     }
 
-    fun lineToRow(line: Int, columns: Int): Int {
-        return line / columns
-    }
+    fun lineToRow(line: Int, columns: Int): Int = line / columns
 
-    fun lineToCol(line: Int, columns: Int): Int {
-        return line % columns
-    }
-
-    fun err(s: String, logger: SeedLogger) {
-        logger.error(s)
-    }
+    fun lineToCol(line: Int, columns: Int): Int = line % columns
 
 }

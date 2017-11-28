@@ -10,16 +10,9 @@ object Rnd {
         return rnd.nextInt(max)
     }
 
-    fun float(mult: Float = 1f): Float {
-        return rnd.nextFloat() * mult
-    }
-
+    fun float(mult: Float = 1f): Float = rnd.nextFloat() * mult
     fun float(): Float = rnd.nextFloat()
-
-    fun bool(): Boolean {
-        return rnd.nextBoolean()
-    }
-
+    fun bool(): Boolean = rnd.nextBoolean()
     fun gauss(): Float = rnd.nextGaussian().toFloat()
     fun gauss(spread: Float): Float = gauss() * spread
 }

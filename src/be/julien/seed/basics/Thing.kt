@@ -1,10 +1,10 @@
 package be.julien.seed.basics
 
-import be.julien.donjon.graphics.Drawable
-import be.julien.donjon.physics.Physics
+import be.julien.seed.graphics.Drawable
+import be.julien.seed.physics.Physics
 import be.julien.seed.physics.shapes.Shape
-import be.julien.donjon.graphics.DrawableDim
-import be.julien.donjon.things.sensors.Sensor
+import be.julien.seed.graphics.DrawableDim
+import be.julien.seed.sensors.Sensor
 import be.julien.seed.utils.Rnd
 import be.julien.seed.time.Time
 import be.julien.seed.graphics.Drawer
@@ -33,7 +33,7 @@ abstract class Thing(public val pos: Vec2, public val dir: Vec2, val img: Any) :
         pos.move(dir, Time.delta)
     }
 
-    open fun draw(drawer: Drawer): Unit {
+    open fun draw(drawer: Drawer) {
         drawer.drawAO(this)
     }
 
@@ -41,7 +41,7 @@ abstract class Thing(public val pos: Vec2, public val dir: Vec2, val img: Any) :
         dir.rotate(angle * delta)
     }
 
-    open fun die(): Unit {
+    open fun die() {
         dead = true
         sensors.forEach { it.dead = true }
     }
@@ -60,13 +60,9 @@ abstract class Thing(public val pos: Vec2, public val dir: Vec2, val img: Any) :
         dir.rotate(Physics.goAwayMod(other, this) * -2f)
     }
 
-    fun dirCenter(other: Thing): Vec2 {
-        return Physics.dirCenter(other, this)
-    }
+    fun dirCenter(other: Thing): Vec2 = Physics.dirCenter(other, this)
 
-    open fun viscosity(a: Thing): Float {
-        return 1f
-    }
+    open fun viscosity(a: Thing): Float = 1f
 
     open fun collidesWith(thing: Thing) {
     }
@@ -81,12 +77,7 @@ abstract class Thing(public val pos: Vec2, public val dir: Vec2, val img: Any) :
     abstract fun mask(): Mask
     abstract override fun dimension(): Dimension
     abstract fun shape(): Shape
-    fun rndX(): Float {
-        return pos.x() + Rnd.float(dimension().width)
-    }
-    fun rndY(): Float {
-        return pos.y() + Rnd.float(dimension().height)
-    }
-
+    fun rndX(): Float = pos.x() + Rnd.float(dimension().width)
+    fun rndY(): Float = pos.y() + Rnd.float(dimension().height)
 
 }

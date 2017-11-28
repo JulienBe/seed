@@ -1,6 +1,6 @@
 package be.julien.seed.basics
 
-import be.julien.donjon.physics.Physics
+import be.julien.seed.physics.Physics
 import be.julien.seed.physics.shapes.Shape
 import be.julien.seed.physics.shapes.SquareAO
 import be.julien.seed.graphics.Drawer

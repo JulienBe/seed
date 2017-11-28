@@ -38,13 +38,10 @@ class TimeInt private constructor(var value: Int, private var interval: Float = 
     fun noCallback() {}
 
     companion object {
-        fun get(value: Int, interval: Float, increment: Int): TimeInt {
-            return TimeInt(value, interval, increment, null)
-        }
+        fun get(value: Int, interval: Float, increment: Int): TimeInt = TimeInt(value, interval, increment, null)
 
-        fun get(value: Int, interval: Float, increment: Int, callback: Callback): TimeInt {
-            return TimeInt(value, interval, increment, callback)
-        }
+        fun get(value: Int, interval: Float, increment: Int, callback: Callback): TimeInt =
+                TimeInt(value, interval, increment, callback)
     }
 }
 
@@ -69,10 +66,7 @@ class Callback(var callbackValue: Int, var callback: () -> Unit) {
     }
 
     companion object {
-        fun get(callbackValue: Int, method: () -> Unit): Callback {
-            return Callback(callbackValue, method)
-        }
+        fun get(callbackValue: Int, method: () -> Unit): Callback = Callback(callbackValue, method)
     }
 
 }
-

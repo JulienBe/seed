@@ -1,4 +1,4 @@
-package be.julien.donjon.things.sensors
+package be.julien.seed.sensors
 
 import be.julien.seed.physics.Vec2
 import be.julien.seed.basics.Thing
