@@ -1,20 +1,20 @@
 package be.julien.seed.physics
 
+import be.julien.seed.basics.Dimension
 import be.julien.seed.basics.Thing
 import be.julien.seed.basics.WallAO
 import be.julien.seed.physics.shapes.Circle
 import be.julien.seed.physics.shapes.SquareAO
 import be.julien.seed.utils.SeedLoggerImpl
-import be.julien.seed.utils.Util
 
 object Physics {
 
-    val rollBackSteps = 8
-    val rollBackPrecision = (1f / rollBackSteps)
+    val rollBackSteps = 4
+    val rollBackPrecision = ((1f / rollBackSteps) + 0.1f)
 
     fun angle(to: Thing, from: Thing): Float = angle(to.centerX(), to.centerY(), from.centerX(), from.centerY())
-
-    fun angle(xTo: Float, yTo: Float, xFrom: Float, yFrom: Float): Float = Vec2.tmp.set(xTo - xFrom, yTo - yFrom).angle()
+    fun angle(from: Dot, to: Dot): Float = Vec2.tmp.set(to.x - from.x, to.y - from.y).angle
+    fun angle(xTo: Float, yTo: Float, xFrom: Float, yFrom: Float): Float = Vec2.tmp.set(xTo - xFrom, yTo - yFrom).angle
 
     fun checkCollision(a: Thing, b: Thing): Boolean {
         when(a.shape()) {
@@ -31,7 +31,7 @@ object Physics {
 
     private fun circleCheck(circle: Thing, b: Thing): Boolean {
         when(b.shape()) {
-            SquareAO -> return squareCircle(b, circle)
+            SquareAO -> return squareCircle(b.centerX(), b.centerY(), circle.centerX(), circle.centerY(), b.dimension(), circle.dimension())
             Circle -> return circleCircle(b, circle)
         }
         return noCollision(circle, b)
@@ -57,26 +57,39 @@ object Physics {
     }
 
     private fun squareCircle(square: Thing, circle: Thing): Boolean {
-        val distX = Math.abs(circle.centerX() - square.centerX())
-        val distY = Math.abs(circle.centerY() - square.centerY())
-        if (distX > (circle.hw() + square.hw()))
+        val collision = squareCircle(square.centerX(), square.centerY(), circle.centerX(), circle.centerY(), square.dimension(), circle.dimension())
+        if (!collision) {
+            // for the moment, circles only are moving fast and colliding aggainst brics
+            if (circle.pos.dstFromPrevious > circle.w())
+                return squareCircle(square.centerX(), square.centerY(), circle.pos.midX + circle.hw(), circle.pos.midY + circle.hh(), square.dimension(), circle.dimension())
+        }
+        return collision
+    }
+
+    private fun squareCircle(
+            squareCenterX: Float, squareCenterY: Float,
+            circleCenterX: Float, circleCenterY: Float,
+            squareDim: Dimension, circleDim: Dimension): Boolean {
+        val distX = Math.abs(circleCenterX - squareCenterX)
+        val distY = Math.abs(circleCenterY - squareCenterY)
+        if (distX > (circleDim.halfWidth + squareDim.halfWidth))
             return false
-        if (distY > (circle.hh() + square.hh()))
+        if (distY > (circleDim.halfHeight + squareDim.halfHeight))
             return false
-        if (distX <= square.hw())
+        if (distX <= squareDim.halfWidth)
             return true
-        if (distY <= square.hh())
+        if (distY <= squareDim.halfHeight)
             return true
-        val dx = distX - square.hw()
-        val dy = distY - square.hh()
-        return (dx * dx + dy * dy) <= (circle.hw() * circle.hw())
+        val dx = distX - squareDim.halfWidth
+        val dy = distY - squareDim.halfHeight
+        return (dx * dx + dy * dy) <= (circleDim.halfWidth * circleDim.halfWidth)
     }
 
     private fun vecInsideSquare(t: Thing, v: Vec2): Boolean {
-        return t.x() < v.x() &&
-                t.x() + t.w() > v.x() &&
-                t.y() < v.y() &&
-                t.h() + t.y() > v.y()
+        return t.x() < v.x &&
+                t.x() + t.w() > v.x &&
+                t.y() < v.y &&
+                t.h() + t.y() > v.y
     }
 
     private fun vecInsideCircle(t: Thing, vec2: Vec2): Boolean = vec2.dst(t.centerX(), t.centerY()) < t.w()
@@ -92,13 +105,13 @@ object Physics {
         // ccw 1
         // dir x = -y;
         // dir y = x;
-        val leftX = (other.pos.x() + other.dir.x()) - (me.pos.x() - me.dir.y())
-        val leftY = (other.pos.y() + other.dir.y()) - (me.pos.y() + me.dir.x())
+        val leftX = (other.pos.x + other.dir.x) - (me.pos.x - me.dir.y)
+        val leftY = (other.pos.y + other.dir.y) - (me.pos.y + me.dir.x)
         // cw -1
         // dir x = y;
         // dir y = -x;
-        val rightX = (other.pos.x() + other.dir.x()) - (me.pos.x() + me.dir.y())
-        val rightY = (other.pos.y() + other.dir.y()) - (me.pos.y() - me.dir.x())
+        val rightX = (other.pos.x + other.dir.x) - (me.pos.x + me.dir.y)
+        val rightY = (other.pos.y + other.dir.y) - (me.pos.y - me.dir.x)
         return (leftX * leftX) + (leftY * leftY) > (rightX * rightX) + (rightY * rightY)
     }
 
@@ -106,46 +119,61 @@ object Physics {
         when (obstacle) {
             is WallAO -> mover.onWallHit().invoke(mover, obstacle)
         }
-        stuck(mover, obstacle)
     }
 
-    fun slide(mover: Thing, obstacle: WallAO) {
-        val normal = obstacle.normal(mover)
-        val myAngle = mover.dir.angle()
-        if (((myAngle + normal.angle) % 180f) > 3f) {
-            Vec2.tmp.set(mover.dir)
-            if (mover.dir.isLeftCloser(normal.angle))
-                mover.dir.setAngle(normal.angle - 89.9f)
-            else
-                mover.dir.setAngle(normal.angle + 89.9f)
-            // as stuck invalidated previous move, make slide move
-            mover.move()
+    fun setOnWall(mover: Thing, obstacle: WallAO) {
+        val intersection = getWallLine(obstacle, mover)
+        placeOnWall(mover, obstacle, intersection)
+    }
+
+    private fun placeOnWall(mover: Thing, obstacle: WallAO, intersection: Pair<Line, Dot>) {
+        when (mover.shape()) {
+            is Circle -> setAlongWall(mover, intersection, mover.hw())
+            is SquareAO -> setAlongWall(mover, intersection, mover.hw() * 1.5f)
         }
+    }
+
+    private fun setAlongWall(mover: Thing, intersection: Pair<Line, Dot>, wallOffset: Float) {
+        if (intersection.second == Dot.nowhere)
+//            mover.pos.invalidate()
+        else {
+            mover.dir.validate()
+            mover.dir.set(intersection.first.bounceVector.x, intersection.first.bounceVector.y)
+            mover.dir.scl(wallOffset)
+                // line intersection is based on center
+            mover.setCenter(
+                    intersection.second.x + mover.hw() * intersection.first.bounceVector.x,
+                    intersection.second.y + mover.hh() * intersection.first.bounceVector.y)
+            mover.dir.invalidate()
+        }
+    }
+
+
+    private fun moveOnWall(mover: Thing, obstacle: WallAO, intersection: Pair<Line, Dot>) {
+        val moverAngle = mover.dir.angle
+        val wallLine = intersection.first
+        if ((wallLine.lineAngle12 - moverAngle) < (wallLine.lineAngle21 - moverAngle)) {
+            mover.dir.setAngle(wallLine.lineAngle12)
+        } else {
+            mover.dir.setAngle(wallLine.lineAngle21)
+        }
+        mover.move()
+        mover.dir.setAngle(moverAngle)
     }
 
     fun bounce(mover: Thing, obstacle: WallAO) {
-        val intersecting = mutableListOf<Pair<Line, Dot>>()
-        obstacle.lines.forEach { line ->
-            val intersection = intersectLines(mover, line)
-            if (intersection != Dot.nowhere)
-                intersecting.add(Pair(line, intersection))
-        }
-        var arbritraryHugeDist = 50000f
-        var selectedLine = intersecting[0].first
-        intersecting.forEach {
-            intersection: Pair<Line, Dot> ->
-            val dst = mover.pos.dst(intersection.second.x, intersection.second.y)
-            if (dst < arbritraryHugeDist) {
-                selectedLine = intersection.first
-                arbritraryHugeDist = dst
-            }
-        }
-        val originalSpeed = mover.dir.len()
+        val selectedLine = getWallLine(obstacle, mover)
+        val originalSpeed = mover.dir.len
         mover.dir.nor()
-        val velocityDotProduct = mover.dir.dot(selectedLine.bounceVector)
-        mover.dir.set(mover.dir.x() - 2 * velocityDotProduct * selectedLine.bounceVector.x(), mover.dir.y() - 2 * velocityDotProduct * selectedLine.bounceVector.y())
+        val velocityDotProduct = mover.dir.dot(selectedLine.first.bounceVector)
+        mover.dir.set(
+                mover.dir.x - 2 * velocityDotProduct * selectedLine.first.bounceVector.x,
+                mover.dir.y - 2 * velocityDotProduct * selectedLine.first.bounceVector.y)
         mover.dir.scl(originalSpeed)
     }
+
+    private fun getWallLine(obstacle: WallAO, mover: Thing): Pair<Line, Dot> =
+            Pair(obstacle.exposedLine, intersectLines(mover, obstacle.exposedLine))
 
     fun stuck(mover: Thing, obstacle: Thing) {
         if (mover.fast()) {
@@ -173,17 +201,18 @@ object Physics {
     fun dirCenter(other: Thing, me: Thing): Vec2 =
             Vec2.get(other.centerX() - me.centerX(), other.centerY() - me.centerY())
 
-    fun linesIntersect(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float, x4: Float, y4: Float): Boolean =
-            intersectLines(x1, y1, x2, y2, x3, y3, x4, y4) != Dot.nowhere
-
-    fun intersectLines(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float, x4: Float, y4: Float): Dot =
+    private fun intersectLines(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float, x4: Float, y4: Float): Dot =
             lineIntersection(x1, y1, x2, y2, x3, y3, x4, y4)
 
-    fun intersectLines(mover: Thing, line: Line): Dot =
-            intersectLines(mover.pos.pX(), mover.pos.pY(), mover.pos.x() + mover.dir.x(), mover.pos.y() + mover.dir.y(),
-                    line.one.x, line.one.y, line.two.x, line.two.y)
+    private fun intersectLines(mover: Thing, line: Line): Dot =
+            // the dir * float is there to get a small tolerance
+            intersectLines(
+                    mover.pCenterX() - mover.dir.x * 0.1f, mover.pCenterY() - mover.dir.y * 0.1f,
+                    mover.centerX() + mover.dir.x * 0.1f, mover.centerY() + mover.dir.y * 0.1f,
+                    line.one.x, line.one.y,
+                    line.two.x, line.two.y)
 
-    fun lineIntersection(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float, x4: Float, y4: Float): Dot {
+    private fun lineIntersection(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float, x4: Float, y4: Float): Dot {
         val s10_x = x2 - x1
         val s10_y = y2 - y1
         val s32_x = x4 - x3
@@ -212,7 +241,7 @@ object Physics {
         return Dot(x1 + (t * s10_x), y1 + (t * s10_y))
     }
 
-    fun  distSq(t1: Thing, t2: Thing): Float {
+    fun distSq(t1: Thing, t2: Thing): Float {
         val distX = t1.centerX() - t2.centerX()
         val distY = t1.centerY() - t2.centerY()
         return (distX * distX) - (distY * distY)

@@ -4,30 +4,49 @@ import be.julien.seed.utils.Rnd
 import be.julien.seed.basics.Thing
 import be.julien.seed.graphics.Drawer
 
-class Vec2 internal constructor(x: Float, y: Float) {
+class Vec2 internal constructor(initX: Float, initY: Float) {
 
     val PI = 3.1415927f
     val radiansToDegrees = 180f / PI
     val degreesToRadians = PI / 180
 
+    private val current = Dot(initX, initY)
+    private val previous = Dot(initX, initY)
 
-    private val current = Dot(x, y)
-    private val previous = Dot(x, y)
+    val x: Float
+        get() = current.x
+    val y: Float
+        get() = current.y
+    val pX: Float
+        get() = previous.x
+    val pY: Float
+        get() = previous.y
+    val midX: Float
+        get() = (x + pX) / 2f
+    val midY: Float
+        get() = (y + pY) / 2f
+    val angle: Float
+        get() {
+            var angle = Math.atan2(current.y.toDouble(), current.x.toDouble()).toFloat() * radiansToDegrees
+            if (angle < 0) angle += 360f
+            return angle
+        }
+    val dstFromPrevious: Float
+        get() {
+            return dst(previous.x, previous.y)
+        }
+    val len: Float
+        get() = Math.sqrt((current.x.toDouble() * current.x + current.y * current.y)).toFloat()
 
     fun move(dir: Vec2, delta: Float) {
-        current.x += dir.x() * delta
-        current.y += dir.y() * delta
+        current.x += dir.x * delta
+        current.y += dir.y * delta
     }
 
     fun move(x: Float, y: Float) {
         current.x += x
         current.y += y
     }
-
-    fun x(): Float = current.x
-    fun y(): Float = current.y
-    fun pX(): Float = previous.x
-    fun pY(): Float = previous.y
 
     fun steerLeft(): Vec2 {
         val x = current.x
@@ -41,6 +60,11 @@ class Vec2 internal constructor(x: Float, y: Float) {
         current.x = current.x * invAlpha + previous.x * viscosity
         current.y = current.y * invAlpha + previous.y * viscosity
         return this
+    }
+
+    fun invalidate() {
+        current.x = previous.x
+        current.y = previous.y
     }
 
     fun validate() {
@@ -67,16 +91,9 @@ class Vec2 internal constructor(x: Float, y: Float) {
     }
 
     fun set(other: Vec2): Vec2 {
-        set(other.x(), other.y())
+        set(other.x, other.y)
         return this
     }
-
-    fun angle(): Float {
-        var angle = Math.atan2(current.y.toDouble(), current.x.toDouble()).toFloat() * radiansToDegrees
-        if (angle < 0) angle += 360f
-        return angle
-    }
-
     fun dst(other: Vec2): Float {
         val x_d = other.current.x - current.x
         val y_d = other.current.y - current.y
@@ -89,7 +106,7 @@ class Vec2 internal constructor(x: Float, y: Float) {
     }
 
     fun nor(): Vec2 {
-        val len = len()
+        val len = len
         if (len != 0f) {
             current.x /= len
             current.y /= len
@@ -138,16 +155,16 @@ class Vec2 internal constructor(x: Float, y: Float) {
     }
 
     fun setAngleRad(radians: Float): Vec2 {
-        this.set(len(), 0f)
+        this.set(len, 0f)
         this.rotateRad(radians)
 
         return this
     }
 
-    fun isLeftCloser(other: Vec2): Boolean = isLeftCloser(other.angle())
+    fun isLeftCloser(other: Vec2): Boolean = isLeftCloser(other.angle)
 
     fun isLeftCloser(angleOther: Float): Boolean {
-        val myAngle = angle()
+        val myAngle = angle
         val upper = (myAngle + 180f) % 360f
         return if (myAngle < 180f)
             angleOther > myAngle && angleOther < upper
@@ -193,7 +210,6 @@ class Vec2 internal constructor(x: Float, y: Float) {
         current.y = y
     }
 
-    fun len(): Float = Math.sqrt((current.x.toDouble() * current.x + current.y * current.y)).toFloat()
 
     fun rotate90(i: Int): Vec2 {
         val x = current.x
@@ -212,6 +228,10 @@ class Vec2 internal constructor(x: Float, y: Float) {
         current.y = Math.abs(current.y)
         current.x *= bounceVector.current.x
         current.y *= bounceVector.current.y
+    }
+
+    override fun toString(): String {
+        return "Vec2(current=$current, previous=$previous)"
     }
 
 }

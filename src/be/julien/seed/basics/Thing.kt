@@ -69,15 +69,20 @@ abstract class Thing(public val pos: Vec2, public val dir: Vec2, val img: Any) :
 
     fun centerX(): Float = x() + hw()
     fun centerY(): Float = y() + hh()
-    override fun x(): Float = pos.x()
-    override fun y(): Float = pos.y()
+    fun pCenterX(): Float = pos.pX + hw()
+    fun pCenterY(): Float = pos.pY + hh()
+    override fun x(): Float = pos.x
+    override fun y(): Float = pos.y
     override fun angle(): Float = 0f
     override fun img(): Any = img
 
     abstract fun mask(): Mask
     abstract override fun dimension(): Dimension
     abstract fun shape(): Shape
-    fun rndX(): Float = pos.x() + Rnd.float(dimension().width)
-    fun rndY(): Float = pos.y() + Rnd.float(dimension().height)
+    fun rndX(): Float = pos.x + Rnd.float(dimension().width)
+    fun rndY(): Float = pos.y + Rnd.float(dimension().height)
+    fun setCenter(x: Float, y: Float) {
+        pos.set(x - hw(), y - hh())
+    }
 
 }
