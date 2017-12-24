@@ -7,7 +7,8 @@ import be.julien.seed.physics.Mask
 abstract class Sensor(var anchor: Thing, img: Any) : Thing(Vec2.get(0f, 0f), Vec2.get(0f, 0f), img) {
     val colliders: MutableCollection<Thing> = mutableListOf()
 
-    override fun mask(): Mask = Mask.Sensor
+    override val mask: Mask
+        get() = Mask.Sensor
 
     fun checked() {
         colliders.clear()

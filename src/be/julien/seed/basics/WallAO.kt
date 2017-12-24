@@ -1,10 +1,7 @@
 package be.julien.seed.basics
 
 import be.julien.seed.physics.Line
-import be.julien.seed.physics.Mask
 import be.julien.seed.physics.Vec2
-import be.julien.seed.physics.shapes.Shape
-import be.julien.seed.physics.shapes.SquareAO
 
 class WallAO(x: Float, y: Float, width: Float, height: Float,
              img: Any,
@@ -13,9 +10,10 @@ class WallAO(x: Float, y: Float, width: Float, height: Float,
              val exposedLine: Line = getExposedLine(exposedSide, x, y, width, height)
              ): Thing(Vec2.get(x, y), Vec2.get(0f, 0f), img) {
 
-    override fun shape(): Shape = SquareAO
-    override fun dimension(): Dimension = dim
-    override fun mask(): Mask = Mask.Wall
+    override val angle: Float
+        get() = 0f
+    override val dimension: Dimension
+        get() = dim
 
     companion object {
         val width = 2f

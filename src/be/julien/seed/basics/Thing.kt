@@ -3,20 +3,41 @@ package be.julien.seed.basics
 import be.julien.seed.graphics.Drawable
 import be.julien.seed.physics.Physics
 import be.julien.seed.physics.shapes.Shape
-import be.julien.seed.graphics.DrawableDim
 import be.julien.seed.sensors.Sensor
 import be.julien.seed.utils.Rnd
 import be.julien.seed.time.Time
 import be.julien.seed.graphics.Drawer
 import be.julien.seed.physics.Mask
 import be.julien.seed.physics.Vec2
+import be.julien.seed.physics.shapes.SquareAO
 
-abstract class Thing(public val pos: Vec2, public val dir: Vec2, val img: Any) : DrawableDim, Drawable {
+abstract class Thing(public val pos: Vec2, public val dir: Vec2, override val img: Any) : Drawable {
 
     val sensors: MutableCollection<Sensor> = mutableListOf()
     var dead = false
+    val fast = false
 
-    open fun fast(): Boolean = false
+    override val x: Float
+        get() = pos.x
+    override val y: Float
+        get() = pos.y
+    val centerX: Float
+        get() = x + hw
+    val centerY: Float
+        get() = y + hh
+    val pCenterX: Float
+        get() = pos.pX + hw
+    val pCenterY: Float
+        get() = pos.pY + hh
+    val rndX: Float
+        get() = pos.x + Rnd.float(dimension.width)
+    val rndY: Float
+        get () = pos.y + Rnd.float(dimension.height)
+    val shape: Shape
+        get() = SquareAO
+    open val mask: Mask
+        get() = Mask.Wall
+
 
     open fun onWallHit() = Physics::bounce
 
@@ -67,22 +88,8 @@ abstract class Thing(public val pos: Vec2, public val dir: Vec2, val img: Any) :
     open fun collidesWith(thing: Thing) {
     }
 
-    fun centerX(): Float = x() + hw()
-    fun centerY(): Float = y() + hh()
-    fun pCenterX(): Float = pos.pX + hw()
-    fun pCenterY(): Float = pos.pY + hh()
-    override fun x(): Float = pos.x
-    override fun y(): Float = pos.y
-    override fun angle(): Float = 0f
-    override fun img(): Any = img
-
-    abstract fun mask(): Mask
-    abstract override fun dimension(): Dimension
-    abstract fun shape(): Shape
-    fun rndX(): Float = pos.x + Rnd.float(dimension().width)
-    fun rndY(): Float = pos.y + Rnd.float(dimension().height)
     fun setCenter(x: Float, y: Float) {
-        pos.set(x - hw(), y - hh())
+        pos.set(x - hw, y - hh)
     }
 
 }
