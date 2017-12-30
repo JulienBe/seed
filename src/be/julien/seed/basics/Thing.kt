@@ -3,7 +3,6 @@ package be.julien.seed.basics
 import be.julien.seed.graphics.Drawable
 import be.julien.seed.physics.Physics
 import be.julien.seed.physics.shapes.Shape
-import be.julien.seed.sensors.Sensor
 import be.julien.seed.utils.Rnd
 import be.julien.seed.time.Time
 import be.julien.seed.graphics.Drawer
@@ -11,7 +10,7 @@ import be.julien.seed.physics.Mask
 import be.julien.seed.physics.Vec2
 import be.julien.seed.physics.shapes.SquareAO
 
-abstract class Thing(public val pos: Vec2, public val dir: Vec2, override val img: Any) : Drawable {
+abstract class Thing(public val pos: Vec2, public val dir: Vec2) : Drawable {
 
     val sensors: MutableCollection<Sensor> = mutableListOf()
     var dead = false

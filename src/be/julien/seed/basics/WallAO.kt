@@ -3,12 +3,11 @@ package be.julien.seed.basics
 import be.julien.seed.physics.Line
 import be.julien.seed.physics.Vec2
 
-class WallAO(x: Float, y: Float, width: Float, height: Float,
-             img: Any,
-             exposedSide: WallSide,
-             val dim: Dimension = Dimension.get(width, height),
-             val exposedLine: Line = getExposedLine(exposedSide, x, y, width, height)
-             ): Thing(Vec2.get(x, y), Vec2.get(0f, 0f), img) {
+abstract class WallAO(x: Float, y: Float, width: Float, height: Float,
+                      exposedSide: WallSide,
+                      val dim: Dimension = Dimension.get(width, height),
+                      val exposedLine: Line = getExposedLine(exposedSide, x, y, width, height)
+             ): Thing(Vec2.get(x, y), Vec2.get(0f, 0f)) {
 
     override val angle: Float
         get() = 0f

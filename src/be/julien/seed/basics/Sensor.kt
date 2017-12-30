@@ -1,10 +1,9 @@
-package be.julien.seed.sensors
+package be.julien.seed.basics
 
 import be.julien.seed.physics.Vec2
-import be.julien.seed.basics.Thing
 import be.julien.seed.physics.Mask
 
-abstract class Sensor(var anchor: Thing, img: Any) : Thing(Vec2.get(0f, 0f), Vec2.get(0f, 0f), img) {
+abstract class Sensor(var anchor: Thing) : Thing(Vec2.get(0f, 0f), Vec2.get(0f, 0f)) {
     val colliders: MutableCollection<Thing> = mutableListOf()
 
     override val mask: Mask
