@@ -15,7 +15,6 @@ abstract class Thing(public val pos: Vec2, public val dir: Vec2, override val im
 
     val sensors: MutableCollection<Sensor> = mutableListOf()
     var dead = false
-    val fast = false
 
     override val x: Float
         get() = pos.x
@@ -33,11 +32,14 @@ abstract class Thing(public val pos: Vec2, public val dir: Vec2, override val im
         get() = pos.x + Rnd.float(dimension.width)
     val rndY: Float
         get () = pos.y + Rnd.float(dimension.height)
-    val shape: Shape
+    open val shape: Shape
         get() = SquareAO
     open val mask: Mask
         get() = Mask.Wall
-
+    open val fast: Boolean
+        get() = false
+    override val angle: Float
+        get() = dir.angle
 
     open fun onWallHit() = Physics::bounce
 
