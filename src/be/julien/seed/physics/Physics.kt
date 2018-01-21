@@ -3,6 +3,7 @@ package be.julien.seed.physics
 import be.julien.seed.basics.Dimension
 import be.julien.seed.basics.Thing
 import be.julien.seed.basics.WallAO
+import be.julien.seed.graphics.Drawable
 import be.julien.seed.physics.shapes.Circle
 import be.julien.seed.physics.shapes.SquareAO
 import be.julien.seed.utils.SeedLoggerImpl
@@ -85,11 +86,11 @@ object Physics {
         return (dx * dx + dy * dy) <= (circleDim.halfWidth * circleDim.halfWidth)
     }
 
-    private fun vecInsideSquare(t: Thing, v: Vec2): Boolean {
-        return t.x < v.x &&
-                t.x + t.w > v.x &&
-                t.y < v.y &&
-                t.h + t.y > v.y
+    public fun vecInsideSquare(d: Drawable, v: Vec2): Boolean {
+        return d.x < v.x &&
+                d.x + d.w > v.x &&
+                d.y < v.y &&
+                d.h + d.y > v.y
     }
 
     private fun vecInsideCircle(t: Thing, vec2: Vec2): Boolean = vec2.dst(t.centerX, t.centerY) < t.w
